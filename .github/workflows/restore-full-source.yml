@@ -24,14 +24,14 @@ jobs:
         shell: bash
         run: |
           cat .restore/part-* > /tmp/araak-source.b64
-          base64 --decode /tmp/araak-source.b64 > /tmp/araak-source.tar.gz
-          tar -tzf /tmp/araak-source.tar.gz >/dev/null
+          base64 --decode /tmp/araak-source.b64 > /tmp/araak-source.tar.xz
+          tar -tJf /tmp/araak-source.tar.xz >/dev/null
 
       - name: Restore exact full source
         shell: bash
         run: |
           rm -rf src public
-          tar -xzf /tmp/araak-source.tar.gz -C .
+          tar -xJf /tmp/araak-source.tar.xz -C .
 
       - name: Commit restored source
         shell: bash
