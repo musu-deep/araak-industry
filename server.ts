@@ -25,8 +25,19 @@ app.post('/api/rfq', (_req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
   const publicDir = path.resolve(__dirname, 'public');
-  app.use(express.static(publicDir));
-  app.get('*', (_req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+
+  app.use(express.static(publicDir, { index: false }));
+
+  app.get('/favicon.ico', (_req, res) => {
+    res.redirect(308, '/favicon.svg');
+  });
+
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(publicDir, 'index.html'), (error) => {
+      if (error) next(error);
+    });
+  });
 } else {
   app.get('/', (_req, res) => res.send('Run the Vite development server through the full project source.'));
 }
