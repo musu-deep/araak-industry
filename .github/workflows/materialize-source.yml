@@ -1,0 +1,40 @@
+name: Materialize ARAAK Industry Source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'source-bundle.b64'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode and unpack full source
+        shell: bash
+        run: |
+          test -f source-bundle.b64 || { echo "source-bundle.b64 not found"; exit 1; }
+          base64 --decode source-bundle.b64 > /tmp/araak-industry-source.tar.gz
+          tar -xzf /tmp/araak-industry-source.tar.gz
+
+      - name: Commit materialized project
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- ':!source-bundle.b64'
+          if git diff --cached --quiet; then
+            echo "Source is already materialized."
+            exit 0
+          fi
+          git commit -m "Materialize full ARAAK Industry source"
+          git push origin HEAD:main
