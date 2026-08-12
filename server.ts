@@ -1,10 +1,8 @@
 import express from 'express';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.use(express.json({ limit: '2mb' }));
 
@@ -24,7 +22,10 @@ app.post('/api/rfq', (_req, res) => {
 });
 
 if (process.env.NODE_ENV === 'production') {
-  const publicDir = path.resolve(__dirname, 'public');
+  // Render starts the service from the repository root. Vite writes the
+  // production client to dist/public, so resolving from process.cwd()
+  // works consistently after server.ts is bundled to CommonJS.
+  const publicDir = path.resolve(process.cwd(), 'dist', 'public');
 
   app.use(express.static(publicDir, { index: false }));
 
