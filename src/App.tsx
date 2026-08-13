@@ -1,31 +1,134 @@
-import React from 'react';
-
-const cards = [
-  ['الهياكل المعدنية', 'حلول تشكيل وتصنيع تخدم المشاريع والقطاعات الإنشائية.'],
-  ['أنظمة الأسقف والجدران', 'منتجات صناعية موثوقة بجودة تشغيلية للمشاريع الحديثة.'],
-  ['حلول حسب المشروع', 'مرونة في المواصفات والكميات وربط الاحتياج بالتصنيع والتوريد.'],
-];
+import React, { useState, useEffect } from 'react';
+import { Language, Product } from './types';
+import { Navbar } from './components/Navbar';
+import { HeroSection } from './components/HeroSection';
+import { MetricsBar } from './components/MetricsBar';
+import { AboutSection } from './components/AboutSection';
+import { ProductsSection } from './components/ProductsSection';
+import { QualityCertificationsSection } from './components/QualityCertificationsSection';
+import { ProjectsSection } from './components/ProjectsSection';
+import { PartnersSection } from './components/PartnersSection';
+import { ContactSection } from './components/ContactSection';
+import { Footer } from './components/Footer';
+import { SmartRFQBuilder } from './components/SmartRFQBuilder';
+import { AIAdvisorDrawer } from './components/AIAdvisorDrawer';
+import { Bot } from 'lucide-react';
 
 export default function App() {
+  const [lang, setLang] = useState<Language>('ar');
+  const [rfqOpen, setRfqOpen] = useState(false);
+  const [aiAdvisorOpen, setAiAdvisorOpen] = useState(false);
+  const [preselectedProductForRfq, setPreselectedProductForRfq] = useState<Product | null>(null);
+
+  // Sync document language and direction (RTL vs LTR)
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [lang]);
+
+  const toggleLanguage = () => {
+    setLang((prev) => (prev === 'ar' ? 'en' : 'ar'));
+  };
+
+  const handleOpenRfqForProduct = (product: Product) => {
+    setPreselectedProductForRfq(product);
+    setRfqOpen(true);
+  };
+
   return (
-    <main style={{fontFamily:'Arial, sans-serif',background:'#f4f7f5',color:'#123',minHeight:'100vh'}}>
-      <section style={{padding:'72px 7vw',background:'linear-gradient(135deg,#082f26,#0f5b45)',color:'white'}}>
-        <div style={{maxWidth:1100,margin:'0 auto'}}>
-          <p style={{letterSpacing:3,opacity:.8}}>ARAAK INDUSTRY</p>
-          <h1 style={{fontSize:'clamp(40px,7vw,88px)',margin:'12px 0'}}>اراك الصناعية</h1>
-          <p style={{fontSize:20,maxWidth:720,lineHeight:1.8}}>قدرات صناعية موثوقة وجودة تدعم المشاريع والقطاعات التجارية.</p>
-          <a href="#contact" style={{display:'inline-block',marginTop:24,padding:'14px 24px',borderRadius:12,background:'white',color:'#0f5b45',textDecoration:'none',fontWeight:700}}>اطلب عرضاً</a>
-        </div>
-      </section>
-      <section style={{maxWidth:1100,margin:'0 auto',padding:'64px 7vw'}}>
-        <h2 style={{fontSize:34}}>حلولنا الصناعية</h2>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:18,marginTop:28}}>
-          {cards.map(([title,body]) => <article key={title} style={{background:'white',padding:28,borderRadius:18,boxShadow:'0 12px 40px #1231'}}><h3>{title}</h3><p style={{lineHeight:1.8,opacity:.75}}>{body}</p></article>)}
-        </div>
-      </section>
-      <section id="contact" style={{maxWidth:1100,margin:'0 auto',padding:'20px 7vw 72px'}}>
-        <div style={{background:'#0f5b45',color:'white',padding:36,borderRadius:22}}><h2>ابدأ مشروعك مع اراك الصناعية</h2><p>تواصل معنا للحصول على عرض فني وتجاري مناسب لاحتياج المشروع.</p></div>
-      </section>
-    </main>
+    <div className="min-h-screen bg-[#070E11] text-slate-100 font-sans selection:bg-[#C5A059] selection:text-slate-950">
+      
+      {/* Navbar */}
+      <Navbar
+        lang={lang}
+        onLanguageToggle={toggleLanguage}
+        onOpenRfq={() => {
+          setPreselectedProductForRfq(null);
+          setRfqOpen(true);
+        }}
+        onOpenAiAdvisor={() => setAiAdvisorOpen(true)}
+      />
+
+      {/* Main Streamlined Corporate Sections */}
+      <main>
+        <HeroSection
+          lang={lang}
+          onOpenRfq={() => {
+            setPreselectedProductForRfq(null);
+            setRfqOpen(true);
+          }}
+          onOpenAiAdvisor={() => setAiAdvisorOpen(true)}
+        />
+
+        <MetricsBar lang={lang} />
+
+        <AboutSection lang={lang} />
+
+        <ProductsSection
+          lang={lang}
+          onSelectProductForRfq={handleOpenRfqForProduct}
+        />
+
+        <QualityCertificationsSection lang={lang} />
+
+        <ProjectsSection lang={lang} />
+
+        <PartnersSection lang={lang} />
+
+        <ContactSection lang={lang} />
+      </main>
+
+      {/* Footer & Mobile Dock */}
+      <Footer
+        lang={lang}
+        onOpenRfq={() => {
+          setPreselectedProductForRfq(null);
+          setRfqOpen(true);
+        }}
+        onOpenAiAdvisor={() => setAiAdvisorOpen(true)}
+      />
+
+      {/* Floating Glass AI Advisor Launcher Button (Desktop & Tablet) */}
+      {!aiAdvisorOpen && (
+        <button
+          onClick={() => setAiAdvisorOpen(true)}
+          className="hidden lg:flex fixed bottom-6 left-6 z-40 px-4 py-3 rounded-2xl bg-[#0B1519]/90 border border-[#C5A059]/50 text-white shadow-2xl shadow-black hover:scale-105 active:scale-95 transition-all items-center gap-3 backdrop-blur-md group cursor-pointer"
+        >
+          <div className="w-8 h-8 rounded-xl bg-[#1A4F63] border border-[#C5A059]/40 flex items-center justify-center group-hover:border-[#C5A059]">
+            <Bot className="w-5 h-5 text-[#C5A059]" />
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-bold block text-white">
+              {lang === 'ar' ? 'مستشار اراك الذكي' : 'ARAAK Industrial Advisor'}
+            </span>
+            <span className="text-[10px] text-[#C5A059] font-mono block">
+              {lang === 'ar' ? 'استشارة فنية فورية' : 'AI Technical Support'}
+            </span>
+          </div>
+        </button>
+      )}
+
+      {/* Smart RFQ Builder Modal */}
+      {rfqOpen && (
+        <SmartRFQBuilder
+          lang={lang}
+          preselectedProduct={preselectedProductForRfq}
+          onClose={() => setRfqOpen(false)}
+        />
+      )}
+
+      {/* AI Industrial Advisor Drawer */}
+      {aiAdvisorOpen && (
+        <AIAdvisorDrawer
+          lang={lang}
+          onClose={() => setAiAdvisorOpen(false)}
+          onOpenRfq={() => {
+            setAiAdvisorOpen(false);
+            setRfqOpen(true);
+          }}
+        />
+      )}
+
+    </div>
   );
 }
